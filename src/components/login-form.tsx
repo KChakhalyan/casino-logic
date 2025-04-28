@@ -1,3 +1,7 @@
+"use client"
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -13,6 +17,29 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const router = useRouter();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const res = await signIn("credentials", {
+      username,
+      password,
+      redirect: false, // don't auto-redirect yet
+    });
+
+    if (res?.error) {
+      // If login failed
+      setError('Invalid username or password');
+
+    } else {
+      // If login successful
+      router.push('/dashboard');
+    }
+  };
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -27,16 +54,19 @@ export function LoginForm({
                 <Input
                   id="username"
                   type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   placeholder="Username"
                   required
                 />
               </div>
               <div className="grid gap-3">
                 <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password" >Password</Label>
 
                 </div>
-                <Input id="password" type="password" required />
+                <Input id="password" type="password" value={password}
+                  onChange={(e) => setPassword(e.target.value)} required />
               </div>
               <div className="flex flex-col gap-3">
                 <Button type="submit" className="w-full">
