@@ -1,15 +1,52 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// prisma/schema.prisma
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
+// Generator: Tells Prisma to generate a client we can import in our app
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
+// Datasource: Tells Prisma which database to connect to
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("DATABASE_URL") // Supabase database connection
+}
+
+// Models = Tables
+
+// Department table: (shift manager, cashdesk, etc.)
+model Department {
+  id    Int    @id @default(autoincrement()) // Primary key
+  name  String @unique // Department name must be unique
+  users User[] // One department can have many users
+}
+
+// User table: employees of the casino
+model User {
+  id                   Int       @id @default(autoincrement()) // Primary key
+  username             String?   @unique // Unique login username
+  firstName            String? // First name
+  lastName             String? // Last name
+  email                String?   @unique // Unique email address
+  phone                String? // Phone number
+  address              String? // Address
+  dateOfBirth          DateTime? // Date of birth
+  hireDate             DateTime? // Hire date
+  salary               Float? // Salary
+  isActive             Boolean?  @default(true) // Is the user active?
+  isAdmin              Boolean?  @default(false) // Is the user an admin?
+  isManager            Boolean?  @default(false) // Is the user a manager?
+  isSuperAdmin         Boolean?  @default(false) // Is the user a super admin?
+  isSlotSupervisor     Boolean?  @default(false) // Is the user a Slot supervisor?
+  isOperator           Boolean?  @default(false) // Is the user an operator?
+  isShiftManager       Boolean?  @default(false) // Is the user a shift manager?
+  isCashier            Boolean?  @default(false) // Is the user a cashier?
+  isCashDeskSupervisor Boolean?  @default(false) // Is the user a cash desk supervisor?
+  isDealer             Boolean?  @default(false) // Is the user a dealer?
+  isPitBoss            Boolean?  @default(false) // Is the user a pit boss?
+
+  password     String? // Hashed password
+  role         String? // Role: shift_manager, operator, supervisor
+  departmentId Int // Foreign key
+  department   Department @relation(fields: [departmentId], references: [id]) // Relation
+  createdAt    DateTime   @default(now()) // Registration time
 }
