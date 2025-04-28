@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/sidebar"
 import { DataTable } from "@/components/data-table"
 import data from "./data.json"
-import { Search } from "lucide-react"
+
 import { SearchForm } from "@/components/search-form"
 export default function Page() {
   return (
